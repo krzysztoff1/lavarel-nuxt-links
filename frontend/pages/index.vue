@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { Article } from "~/types";
+import type { ArticleList } from "~/types";
 
-const { data: articles, status } = await useFetch<Article[]>(
+const router = useRouter();
+
+const { data: articles, status } = await useFetch<ArticleList>(
   "http://127.0.0.1:8000/api/articles"
 );
-console.log(articles);
 </script>
 
 <template>
@@ -15,7 +16,9 @@ console.log(articles);
     <p v-if="status === 'error'">Error!</p>
     <ul v-if="status === 'success' && articles">
       <li v-for="article in articles" :key="article.guid">
-        <a href=" {{ article.link }} ">{{ article.title }}</a>
+        <nuxt-link :to="`/${article.link.slice(0, -1).split('/').at(-1)}`">
+          {{ article.title }}
+        </nuxt-link>
       </li>
     </ul>
   </div>
