@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { Article } from "~/types";
 
+const config = useRuntimeConfig();
 const route = useRoute();
+
 const { data: article, status } = await useFetch<Article>(
-  "http://127.0.0.1:8000/api/article/" + route.params.slug
+  config.public.backendUrl + "/api/article/" + route.params.slug
 );
 </script>
 
