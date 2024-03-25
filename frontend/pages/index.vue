@@ -2,10 +2,13 @@
 import type { ArticleList } from "~/types";
 
 const router = useRouter();
+const config = useRuntimeConfig();
 
-const { data: articles, status } = await useFetch<ArticleList>(
-  "http://127.0.0.1:8000/api/articles"
-);
+const articleListApiUrl = config.public.backendUrl + "/api/articles";
+console.log(articleListApiUrl);
+
+const { data: articles, status } =
+  await useFetch<ArticleList>(articleListApiUrl);
 </script>
 
 <template>
@@ -14,12 +17,15 @@ const { data: articles, status } = await useFetch<ArticleList>(
 
     <p v-if="status === 'pending'">Loading...</p>
     <p v-if="status === 'error'">Error!</p>
-    <ul v-if="status === 'success' && articles">
+    <ul v-if="status === 'success' && articles?.length">
       <li v-for="article in articles" :key="article.guid">
         <nuxt-link :to="`/${article.link.slice(0, -1).split('/').at(-1)}`">
           {{ article.title }}
         </nuxt-link>
       </li>
     </ul>
+    <div v-if="status === 'success' && !articles?.length">
+      No articles found
+    </div>
   </div>
 </template>

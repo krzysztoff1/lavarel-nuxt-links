@@ -3,4 +3,9 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
+  runtimeConfig: {
+    public: {
+      backendUrl: process.env.BACKEND_URL,
+    },
+  },
 });

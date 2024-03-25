@@ -22,6 +22,7 @@ export type Article = {
 export type ArticleList = {
   guid: string;
   title: string;
+  link: string;
   pubDate: string;
   category: string[];
 }[];
