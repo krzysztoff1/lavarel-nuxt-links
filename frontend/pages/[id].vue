@@ -28,15 +28,15 @@ const { data: article, status } = await useFetch<Article>(
         #{{ category }}
       </li>
     </ul>
-
-    <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm">{{
-      $t("source")
-    }}</nuxt-link>
   </div>
 
   <div v-if="status === 'success' && article" class="px-4">
     <p v-html="article.description"></p>
   </div>
+
+  <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm">{{
+    $t("source")
+  }}</nuxt-link>
 
   <Alert v-if="status === 'error'" type="error" :message="$t('genericError')" />
 </template>
