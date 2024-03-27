@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { parseHtml } from "~/lib/parse-html";
 import type { Article } from "~/types";
 
 const config = useRuntimeConfig();
@@ -11,10 +12,14 @@ const { data: article, status } = await useFetch<Article>(
     query: { lang: locale },
   }
 );
+
+console.log(article);
 </script>
 
 <template>
-  <Header :title="article?.title" />
+  <Header />
+
+  <h1 class="text-2xl font-bold px-4">{{ article?.title }}</h1>
 
   <nuxt-link to="/" class="text-sm hover:underline px-4"
     >← {{ $t("back") }}</nuxt-link
@@ -31,7 +36,7 @@ const { data: article, status } = await useFetch<Article>(
   </div>
 
   <div v-if="status === 'success' && article" class="px-4">
-    <p v-html="article.description"></p>
+    {{ parseHtml(article?.description) }}
   </div>
 
   <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm px-4">{{
