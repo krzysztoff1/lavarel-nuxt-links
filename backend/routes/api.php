@@ -6,4 +6,4 @@ use App\Http\Controllers\ArticleController;
 
 Route::get('/articles', [ArticleListController::class, 'index']);
 
-Route::get('/article/{slug}', [ArticleController::class, 'index']);
+Route::get('/article/{id}', [ArticleController::class, 'index']);

@@ -2,44 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ArticleListResource;
+use App\Services\LinkhouseApiService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Saloon\XmlWrangler\XmlReader;
 
 class ArticleListController extends Controller
 {
-    public function index()
+    protected $linkhouseApiService;
+
+    public function __construct()
     {
-        $feed_response = Http::get('https://linkhouse.pl/feed/'); 
-       
-        if ($feed_response->failed()) {
-            return response()->json([
-                'error' => 'Failed to fetch articles. Please try again later.'
-            ], 500);
+        $this->linkhouseApiService = new LinkhouseApiService();
+    }
+
+    public function index(Request $request)
+    {
+        try {
+            $lang = $request->query('lang', 'pl');
+            $feedResponse = $this->linkhouseApiService->fetchFeed($lang);
+            $xmlValues = $this->parseXmlValues(is_string($feedResponse) ? $feedResponse : $feedResponse->body());
+
+            if (empty ($xmlValues['rss']['channel']['item'])) {
+                return response()->json(['error' => 'No articles found.'], 404);
+            }
+
+            $articleList = $this->remodel($xmlValues['rss']['channel']['item']);
+
+            return response()->json($articleList);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch articles. Please try again later.'], 500);
         }
+    }
 
-        $xml_body = $feed_response->body();
-        $xml_values = XmlReader::fromString($xml_body)->values();
-        $article_list = [];
+    protected function parseXmlValues($xmlBody)
+    {
+        return XmlReader::fromString($xmlBody)->values();
+    }
 
-        foreach ($xml_values['rss']['channel']['item'] as $article) {
-            $article_list[] = [
-                'title' => $article['title'],
-                'link' => $article['link'],
-                'comments' => $article['comments'],
-                'pubDate' => $article['pubDate'],
-                'category' => is_array($article['category']) ? $article['category'] : [$article['category']],
-                'guid' => $article['guid'],
-                'description' => $article['description'],
-            ];
-        }
-
-        if (empty($article_list)) {
-            return response()->json([
-                'error' => 'No articles found.'
-            ], 404);
-        }
-
-        return response()->json($article_list);
+    protected function remodel($articles)
+    {
+        return collect($articles)->map(function ($article) {
+            return new ArticleListResource($article);
+        });
     }
 }

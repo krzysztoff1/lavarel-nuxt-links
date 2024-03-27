@@ -2,48 +2,65 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ArticleResource;
+use App\Services\LinkhouseApiService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Saloon\XmlWrangler\XmlReader;
+use Illuminate\Support\Facades\Log;
 
 class ArticleController extends Controller
 {
-    public function index(string $slug)
-    {
-        $feed_response = Http::get('https://linkhouse.pl/feed/'); 
-       
-        if ($feed_response->failed()) {
-            return response()->json([
-                'error' => 'Failed to fetch article.',
-            ], 500);
-        }
+    protected $linkhouseApiService;
 
-        $xml_body = $feed_response->body();
-        $xml_values = XmlReader::fromString($xml_body)->values();
-        $article = null;
-        
-        foreach ($xml_values['rss']['channel']['item'] as $article) {
-            if ($article['link'] !== 'https://linkhouse.pl/artykul/' . $slug . '/') {
-                continue;
+    public function __construct()
+    {
+        $this->linkhouseApiService = new LinkhouseApiService();
+    }
+
+    public function index(Request $request)
+    {
+        try {
+            $lang = $request->query('lang', 'pl');
+            $feedResponse = $this->linkhouseApiService->fetchFeed($lang);
+            $xmlValues = $this->parseXmlValues(is_string($feedResponse) ? $feedResponse : $feedResponse->body());
+
+            if (empty ($xmlValues['rss']['channel']['item'])) {
+                return response()->json(['error' => 'Article found.'], 404);
             }
 
-            $article = [
-                'title' => $article['title'],
-                'link' => $article['link'],
-                'comments' => $article['comments'],
-                'pubDate' => $article['pubDate'],
-                'category' => is_array($article['category']) ? $article['category'] : [$article['category']],
-                'guid' => $article['guid'],
-                'description' => $article['description'],
-            ];
-        }
-        
-        if ($article === null) {
-            return response()->json([
-                'error' => 'Article not found.',
-            ], 404);
-        } 
+            $fullArticle = $this->findArticle($xmlValues['rss']['channel']['item'], $request->route('id'), $lang);
 
-        return response()->json($article);
+            if ($fullArticle === null) {
+                return response()->json(['error' => 'Article not found.'], 404);
+            }
+
+            $article = $this->remodel($fullArticle);
+
+            return response()->json($article);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch Article. Please try again later.'], 500);
+        }
+    }
+    protected function parseXmlValues($xmlBody)
+    {
+        return XmlReader::fromString($xmlBody)->values();
+    }
+
+    protected function remodel($articles)
+    {
+        return new ArticleResource($articles);
+    }
+
+    protected function findArticle($articles, $id, $lang)
+    {
+        Log::info($id);
+        foreach ($articles as $article) {
+            if ($article['guid'] === 'https://linkhouse.' . $lang . '/?p=' . $id) {
+                return $article;
+            }
+        }
+
+        return null;
     }
 }
