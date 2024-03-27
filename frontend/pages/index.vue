@@ -29,27 +29,24 @@ watch(search, (searchTerm) => {
 
   articles.value = articleList.value;
 });
+
 </script>
 
 <template>
-  <div class="view">
-    <h1>Articles</h1>
+  <h1 class="text-3xl font-bold">Linkhouse Blog</h1>
 
-    <form @submit.prevent>
-      <input type="text" v-model="search" placeholder="Search articles" />
-      <button type="submit">Search</button>
-    </form>
-    <p v-if="status === 'pending'">Loading...</p>
-    <p v-if="status === 'error'">Error!</p>
-    <ul v-if="status === 'success' && articles?.length">
-      <li v-for="article in articles" :key="article.guid">
-        <nuxt-link :to="`/${article.link.slice(0, -1).split('/').at(-1)}`">
-          {{ article.title }} {{ article.category.join(", ") }}
-        </nuxt-link>
-      </li>
-    </ul>
-    <div v-if="status === 'success' && !articles?.length">
-      No articles found {{ search ? `for "${search}"` : "" }}
-    </div>
-  </div>
+  <form @submit.prevent>
+    <input type="text" v-model="search" placeholder="Search articles" />
+    <button type="submit">Search</button>
+  </form>
+
+  <ul v-if="status === 'success' && articles?.length" class="flex flex-col space-y-2">
+    <ArticleItem v-for="article in articles" :key="article.guid" :article="article" />
+  </ul>
+
+  <Alert v-if="status === 'pending'" type="neutral" message="Loading..." />
+
+  <Alert v-if="status === 'error'" type="error" message="We're sorry, something went wrong. Please try again later." />
+
+  <Alert v-if="status === 'success' && !articles?.length" type="neutral" message="No articles found." />
 </template>

@@ -10,6 +10,10 @@ useHead({
 
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <main class="bg-white flex flex-col items-start justify-start min-h-screen">
+      <div class="max-w-2xl mx-auto px-4 w-full sm:px-6 lg:px-8 p-8 flex flex-col space-y-6">
+        <NuxtPage />
+      </div>
+    </main>
   </NuxtLayout>
 </template>
