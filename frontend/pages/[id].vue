@@ -34,7 +34,7 @@ const { data: article, status } = await useFetch<Article>(
     <p v-html="article.description"></p>
   </div>
 
-  <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm">{{
+  <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm px-4">{{
     $t("source")
   }}</nuxt-link>
 
