@@ -16,11 +16,13 @@ const { data: article, status } = await useFetch<Article>(
 <template>
   <Header :title="article?.title" />
 
-  <nuxt-link to="/" class="text-sm hover:underline"
+  <nuxt-link to="/" class="text-sm hover:underline px-4"
     >← {{ $t("back") }}</nuxt-link
   >
 
-  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+  <div
+    class="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4"
+  >
     <ul class="flex flex-row space-x-2">
       <li v-for="category in article?.category" :key="category" class="text-sm">
         #{{ category }}
