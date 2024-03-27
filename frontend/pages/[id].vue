@@ -39,9 +39,12 @@ console.log(article);
     {{ parseHtml(article?.description) }}
   </div>
 
-  <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm px-4">{{
-    $t("source")
-  }}</nuxt-link>
+  <nuxt-link
+    v-if="status === 'success' && article"
+    :to="`${article?.link}`"
+    class="hover:underline text-sm px-4"
+    >{{ $t("source") }}</nuxt-link
+  >
 
   <Alert v-if="status === 'error'" type="error" :message="$t('genericError')" />
 </template>
