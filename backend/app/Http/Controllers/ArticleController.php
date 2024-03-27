@@ -43,6 +43,7 @@ class ArticleController extends Controller
             return response()->json(['error' => 'Failed to fetch Article. Please try again later.'], 500);
         }
     }
+    
     protected function parseXmlValues($xmlBody)
     {
         return XmlReader::fromString($xmlBody)->values();
