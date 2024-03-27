@@ -10,14 +10,22 @@ const { data: articles, status } = await useFetch<ArticleList>(
   { query: { lang: locale } }
 );
 
-const filteredArticles = ref<ArticleList>(articles.value);
+const filteredArticles = ref<ArticleList>(articles.value ?? []);
 const search = ref("");
 
 watch(articles, (newArticles) => {
+  if (!newArticles) {
+    return;
+  }
+
   filteredArticles.value = newArticles;
 });
 
 const handleSearch = (searchTerm: string) => {
+  if (!articles.value) {
+    return;
+  }
+
   if (!searchTerm) {
     filteredArticles.value = articles.value;
     return;
