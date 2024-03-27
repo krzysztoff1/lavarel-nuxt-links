@@ -34,7 +34,7 @@ const { data: article, status } = await useFetch<Article>(
     }}</nuxt-link>
   </div>
 
-  <div v-if="status === 'success' && article">
+  <div v-if="status === 'success' && article" class="px-4">
     <p v-html="article.description"></p>
   </div>
 
