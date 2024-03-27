@@ -38,7 +38,11 @@ watch(search, (term) => handleSearch(term));
 <template>
   <Header />
 
-  <form @submit.prevent @submit="handleSearch(search)" class="flex space-x-2">
+  <form
+    @submit.prevent
+    @submit="handleSearch(search)"
+    class="flex space-x-2 px-4"
+  >
     <input
       type="text"
       v-model="search"
