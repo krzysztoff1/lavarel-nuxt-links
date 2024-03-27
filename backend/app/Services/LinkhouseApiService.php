@@ -23,7 +23,7 @@ class LinkhouseApiService
         if (Cache::has($cache_key)) {
             $response = Cache::get($cache_key);
         } else {
-            $url = Config::get("api.linkhouse.{$lang}");
+            $url = Config::get("api.linkhouse.{$lang}") . '/feed/';
             $response = Http::get($url);
 
             if ($response->successful()) {

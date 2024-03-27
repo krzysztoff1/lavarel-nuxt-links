@@ -3,15 +3,22 @@ import type { Article } from "~/types";
 
 const config = useRuntimeConfig();
 const route = useRoute();
+const { locale } = useI18n();
 
 const { data: article, status } = await useFetch<Article>(
-  config.public.backendUrl + "/api/article/" + route.params.id
+  config.public.backendUrl + "/api/article/" + route.params.id,
+  {
+    query: { lang: locale },
+  }
 );
-
 </script>
 
 <template>
-  <h1 class="text-3xl font-bold">{{ article?.title }}</h1>
+  <Header :title="article?.title" />
+
+  <nuxt-link to="/" class="text-sm hover:underline"
+    >← {{ $t("back") }}</nuxt-link
+  >
 
   <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
     <ul class="flex flex-row space-x-2">
@@ -20,12 +27,14 @@ const { data: article, status } = await useFetch<Article>(
       </li>
     </ul>
 
-    <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm">Source</nuxt-link>
+    <nuxt-link :to="`${article?.link}`" class="hover:underline text-sm">{{
+      $t("source")
+    }}</nuxt-link>
   </div>
 
   <div v-if="status === 'success' && article">
-    <p>{{ article.description }}</p>
+    <p v-html="article.description"></p>
   </div>
 
-  <Alert v-if="status === 'error'" type="error" message="We're sorry, something went wrong. Please try again later." />
+  <Alert v-if="status === 'error'" type="error" :message="$t('genericError')" />
 </template>
