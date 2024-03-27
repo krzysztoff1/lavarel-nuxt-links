@@ -9,7 +9,7 @@ return [
     */
 
     'linkhouse' => [
-        'en' => 'https://linkhouse.net/feed/',
-        'pl' => 'https://linkhouse.pl/feed/',
+        'en' => 'https://linkhouse.net/',
+        'pl' => 'https://linkhouse.pl/',
     ],
 ];

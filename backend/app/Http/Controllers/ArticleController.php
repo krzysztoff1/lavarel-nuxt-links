@@ -7,6 +7,7 @@ use App\Services\LinkhouseApiService;
 use Illuminate\Http\Request;
 use Saloon\XmlWrangler\XmlReader;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class ArticleController extends Controller
 {
@@ -42,6 +43,7 @@ class ArticleController extends Controller
             return response()->json(['error' => 'Failed to fetch Article. Please try again later.'], 500);
         }
     }
+    
     protected function parseXmlValues($xmlBody)
     {
         return XmlReader::fromString($xmlBody)->values();
@@ -54,11 +56,14 @@ class ArticleController extends Controller
 
     protected function findArticle($articles, $id, $lang)
     {
-        Log::info($id);
+        $targedGuid = Config::get("api.linkhouse.{$lang}") . '?p=' . $id;
+
         foreach ($articles as $article) {
-            if ($article['guid'] === 'https://linkhouse.' . $lang . '/?p=' . $id) {
-                return $article;
+            if ($article['guid'] !== $targedGuid) {
+                continue;
             }
+
+            return $article;
         }
 
         return null;
