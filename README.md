@@ -1,6 +1,6 @@
 ## Local Development
-Create `.env` file in the `frontend` directory. Copy the contents of `.env.example` and replace the values with your own.
-Create `.env` file in the `backend` directory. Copy the contents of `.env.example` and replace the values with your own.
+Create `.env` file in the `frontend` directory. Copy the contents of `.env.example`.
+Create `.env` file in the `backend` directory. Copy the contents of `.env.example`.
 
 **Frontend**
 <br>
@@ -19,7 +19,7 @@ In the separate terminal, navigate to the `backend` directory and install the de
 ```bash
 composer install
 ```
-Start the development server on `http://localhost:8000`:
+Key generation, migration, seeding, and starting the development server on `http://127.0.0.1:8000`.
 ```bash
-php artisan serve
+php artisan key:generate && php artisan migrate && php artisan db:seed && php artisan serve
 ```
