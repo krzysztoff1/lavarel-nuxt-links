@@ -6,7 +6,8 @@ Create `.env` file in the `backend` directory. Copy the contents of `.env.exampl
 <br>
 Navigate to the `frontend` directory and install the dependencies:
 ```bash
-bun install
+<!-- You can also use npm or yarn -->
+bun install 
 ```
 Start the development server on `http://localhost:3000`:
 ```bash
